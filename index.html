@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>History Generator Pro - 高精度履歴管理ツール</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #131825;
+    --bg-tertiary: #1a2033;
+    --bg-card: #1e2538;
+    --border: #2a3245;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-dim: #64748b;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .control-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .control-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  input, select {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  input[type="number"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  button {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+  }
+
+  button:active::before {
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  .btn-secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .stat-label {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-value.success {
+    color: var(--success);
+  }
+
+  .stat-value.warning {
+    color: var(--warning);
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .log-container {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+  }
+
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .log-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .log-action {
+    padding: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .log-action:hover {
+    color: var(--text-primary);
+    border-color: var(--accent);
+  }
+
+  .log {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    height: 400px;
+    overflow-y: auto;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .log::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .log::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+  }
+
+  .log::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+
+  .log::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+  }
+
+  .log-entry {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .log-entry:hover {
+    background: var(--bg-tertiary);
+    border-left-color: var(--accent);
+  }
+
+  .log-time {
+    color: var(--text-dim);
+    margin-right: 0.5rem;
+  }
+
+  .log-success {
+    color: var(--success);
+  }
+
+  .log-warning {
+    color: var(--warning);
+  }
+
+  .log-error {
+    color: var(--danger);
+  }
+
+  .log-info {
+    color: var(--accent);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: 0.5rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .alert {
+    padding: 1rem;
+    background: var(--bg-tertiary);
+    border-left: 4px solid var(--warning);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .accuracy-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .accuracy-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .accuracy-dot.high {
+    background: var(--success);
+  }
+
+  .accuracy-dot.medium {
+    background: var(--warning);
+  }
+
+  .accuracy-dot.low {
+    background: var(--danger);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>History Generator Pro</h1>
+      <p>高精度ブラウザ履歴管理ツール</p>
+    </div>
+
+    <div class="main-grid">
+      <div class="card">
+        <h2 class="card-title">コントロールパネル</h2>
+        
+        <div class="control-group">
+          <label class="control-label">追加件数</label>
+          <input id="count" type="number" value="1000" min="1" max="50000" />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">追加モード</label>
+          <select id="mode">
+            <option value="push">pushState (推奨)</option>
+            <option value="replace">replaceState (置換)</option>
+            <option value="hash">location.hash (互換)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">実行戦略</label>
+          <select id="strategy">
+            <option value="precise">高精度モード (確実)</option>
+            <option value="balanced">バランスモード (標準)</option>
+            <option value="fast">高速モード (パフォーマンス重視)</option>
+            <option value="ultra">ウルトラモード (最速・リスク有)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">チャンクサイズ</label>
+          <input id="chunkSize" type="number" value="100" min="10" max="1000" />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">遅延時間 (ms)</label>
+          <input id="delay" type="number" value="5" min="0" max="100" />
+        </div>
+
+        <div class="button-group">
+          <button id="run" class="btn-primary">実行開始</button>
+          <button id="stop" class="btn-danger">停止</button>
+          <button id="cleanup" class="btn-secondary">クリーンアップ</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">ステータス</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">開始時</div>
+            <div class="stat-value" id="startLen">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">現在</div>
+            <div class="stat-value success" id="curLen">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">追加済み</div>
+            <div class="stat-value warning" id="added">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">成功率</div>
+            <div class="stat-value" id="accuracy">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">速度</div>
+            <div class="stat-value" id="speed">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">状態</div>
+            <div class="stat-value" id="status">待機中</div>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress" style="width: 0%"></div>
+        </div>
+
+        <div class="accuracy-indicator">
+          <span>精度:</span>
+          <div class="accuracy-dot high" id="accuracyDot"></div>
+          <span id="accuracyText">高精度</span>
+        </div>
+
+        <div class="alert" style="margin-top: 1rem;">
+          <strong>⚠️ 注意:</strong> 大量の履歴追加はブラウザのメモリ使用量を増加させます。
+        </div>
+      </div>
+    </div>
+
+    <div class="log-container">
+      <div class="log-header">
+        <h2 class="card-title">実行ログ</h2>
+        <div class="log-actions">
+          <button class="log-action" id="clearLog">クリア</button>
+          <button class="log-action" id="exportLog">エクスポート</button>
+        </div>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+<script>
+// DOM要素
+const els = {
+  log: document.getElementById('log'),
+  count: document.getElementById('count'),
+  mode: document.getElementById('mode'),
+  strategy: document.getElementById('strategy'),
+  chunkSize: document.getElementById('chunkSize'),
+  delay: document.getElementById('delay'),
+  run: document.getElementById('run'),
+  stop: document.getElementById('stop'),
+  cleanup: document.getElementById('cleanup'),
+  clearLog: document.getElementById('clearLog'),
+  exportLog: document.getElementById('exportLog'),
+  startLen: document.getElementById('startLen'),
+  curLen: document.getElementById('curLen'),
+  added: document.getElementById('added'),
+  accuracy: document.getElementById('accuracy'),
+  speed: document.getElementById('speed'),
+  status: document.getElementById('status'),
+  progress: document.getElementById('progress'),
+  accuracyDot: document.getElementById('accuracyDot'),
+  accuracyText: document.getElementById('accuracyText')
+};
+
+// 状態管理
+const state = {
+  running: false,
+  stopRequested: false,
+  addedCount: 0,
+  successCount: 0,
+  startLength: 0,
+  startTime: 0,
+  marker: null,
+  logs: []
+};
+
+const STORAGE_KEY = '__history_gen_pro_v3__';
+
+// ユーティリティ関数
+const utils = {
+  log(msg, type = 'info') {
+    try {
+      const time = new Date().toLocaleTimeString('ja-JP', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit'
+      });
+      
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `
+        <span class="log-time">[${time}]</span>
+        <span class="log-${type}">${msg}</span>
+      `;
+      
+      els.log.prepend(entry);
+      state.logs.push({ time, msg, type });
+      
+      // ログが多すぎる場合は古いものを削除
+      if (els.log.children.length > 500) {
+        els.log.removeChild(els.log.lastChild);
+      }
+    } catch (e) {
+      console.error('Log error:', e);
+    }
+  },
+
+  formatNumber(num) {
+    return new Intl.NumberFormat('ja-JP').format(num);
+  },
+
+  generateUniqueUrl(index) {
+    // より確実にユニークなURLを生成
+    const base = window.location.pathname;
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 9);
+    const perf = Math.floor(performance.now());
+    
+    // 複数のユニーク要素を組み合わせる
+    return `${base}?h=${index}&t=${timestamp}&r=${random}&p=${perf}`;
+  },
+
+  async wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  },
+
+  updateStats() {
+    const currentLength = history.length;
+    els.curLen.textContent = utils.formatNumber(currentLength);
+    els.added.textContent = utils.formatNumber(state.addedCount);
+    
+    if (state.startLength > 0) {
+      const actualAdded = currentLength - state.startLength;
+      const accuracy = state.addedCount > 0 
+        ? ((actualAdded / state.addedCount) * 100).toFixed(1) 
+        : '0';
+      
+      els.accuracy.textContent = `${accuracy}%`;
+      
+      // 精度インジケーターの更新
+      const accuracyNum = parseFloat(accuracy);
+      if (accuracyNum >= 95) {
+        els.accuracyDot.className = 'accuracy-dot high';
+        els.accuracyText.textContent = '高精度';
+      } else if (accuracyNum >= 80) {
+        els.accuracyDot.className = 'accuracy-dot medium';
+        els.accuracyText.textContent = '中精度';
+      } else {
+        els.accuracyDot.className = 'accuracy-dot low';
+        els.accuracyText.textContent = '低精度';
+      }
+    }
+    
+    // 速度計算
+    if (state.startTime && state.addedCount > 0) {
+      const elapsed = (Date.now() - state.startTime) / 1000;
+      const speed = Math.round(state.addedCount / elapsed);
+      els.speed.textContent = `${utils.formatNumber(speed)}/秒`;
+    }
+  },
+
+  updateProgress(current, total) {
+    const percentage = (current / total) * 100;
+    els.progress.style.width = `${percentage}%`;
+  }
+};
+
+// 履歴追加エンジン
+const engine = {
+  async addSingleEntry(index, mode) {
+    try {
+      const url = utils.generateUniqueUrl(index);
+      const stateObj = {
+        generated: true,
+        index,
+        timestamp: Date.now(),
+        mode
+      };
+
+      switch(mode) {
+        case 'push':
+          history.pushState(stateObj, '', url);
+          break;
+        case 'replace':
+          // 最初だけpush、以降はreplace+push
+          if (index === 1) {
+            history.pushState(stateObj, '', url);
+          } else {
+            history.replaceState(stateObj, '', url);
+            // 小さな遅延後に次をpush
+            await utils.wait(1);
+            const newUrl = utils.generateUniqueUrl(index + 0.1);
+            history.pushState(stateObj, '', newUrl);
+          }
+          break;
+        case 'hash':
+          location.hash = `h${index}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          break;
+      }
+      
+      state.successCount++;
+      return true;
+    } catch (error) {
+      utils.log(`エラー at index ${index}: ${error.message}`, 'error');
+      return false;
+    }
+  },
+
+  async runPrecise(total, mode) {
+    // 高精度モード: 1件ずつ確実に追加
+    const chunkSize = 10;
+    const delay = 10;
+    
+    for (let i = 1; i <= total; i++) {
+      if (state.stopRequested) break;
+      
+      await engine.addSingleEntry(i, mode);
+      state.addedCount++;
+      
+      if (i % chunkSize === 0) {
+        utils.updateStats();
+        utils.updateProgress(i, total);
+        await utils.wait(delay);
+      }
+    }
+  },
+
+  async runBalanced(total, mode) {
+    // バランスモード
+    const chunkSize = parseInt(els.chunkSize.value);
+    const delay = parseInt(els.delay.value);
+    
+    for (let i = 1; i <= total; i += chunkSize) {
+      if (state.stopRequested) break;
+      
+      const end = Math.min(i + chunkSize - 1, total);
+      
+      // チャンク内は同期実行
+      for (let j = i; j <= end; j++) {
+        if (state.stopRequested) break;
+        await engine.addSingleEntry(j, mode);
+        state.addedCount++;
+      }
+      
+      utils.updateStats();
+      utils.updateProgress(end, total);
+      
+      // チャンク間で遅延
+      if (delay > 0) {
+        await utils.wait(delay);
+      }
+    }
+  },
+
+  async runFast(total, mode) {
+    // 高速モード
+    const chunkSize = 500;
+    
+    for (let i = 1; i <= total; i += chunkSize) {
+      if (state.stopRequested) break;
+      
+      const end = Math.min(i + chunkSize - 1, total);
+      const promises = [];
+      
+      for (let j = i; j <= end; j++) {
+        if (state.stopRequested) break;
+        
+        // 非同期で並列実行
+        promises.push(engine.addSingleEntry(j, mode).then(() => {
+          state.addedCount++;
+        }));
+      }
+      
+      await Promise.all(promises);
+      utils.updateStats();
+      utils.updateProgress(end, total);
+      
+      // 最小限の遅延
+      await utils.wait(1);
+    }
+  },
+
+  async runUltra(total, mode) {
+    // ウルトラモード: 非同期で最速
+    for (let i = 1; i <= total; i++) {
+      if (state.stopRequested) break;
+      
+      const url = utils.generateUniqueUrl(i);
+      const stateObj = { gen: true, i, t: Date.now() };
+      
+      try {
+        history.pushState(stateObj, '', url);
+        state.addedCount++;
+        state.successCount++;
+        
+        if (i % 100 === 0) {
+          utils.updateStats();
+          utils.updateProgress(i, total);
+          await utils.wait(0); // マイクロタスクを許可
+        }
+      } catch (e) {
+        utils.log(`Failed at ${i}: ${e.message}`, 'error');
+      }
+    }
+    
+    utils.updateStats();
+    utils.updateProgress(total, total);
+  }
+};
+
+// メイン実行関数
+async function run() {
+  if (state.running) {
+    utils.log('既に実行中です', 'warning');
+    return;
+  }
+
+  const total = parseInt(els.count.value);
+  const mode = els.mode.value;
+  const strategy = els.strategy.value;
+
+  // 初期化
+  state.running = true;
+  state.stopRequested = false;
+  state.addedCount = 0;
+  state.successCount = 0;
+  state.startLength = history.length;
+  state.startTime = Date.now();
+  
+  // マーカー保存
+  state.marker = { start: state.startLength, mode, strategy, total };
+  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state.marker));
+
+  // UI更新
+  els.startLen.textContent = utils.formatNumber(state.startLength);
+  els.status.textContent = '実行中';
+  els.status.innerHTML += '<span class="loading"></span>';
+  els.run.disabled = true;
+  
+  utils.log(`実行開始: ${total}件, モード: ${mode}, 戦略: ${strategy}`, 'success');
+
+  try {
+    switch(strategy) {
+      case 'precise':
+        await engine.runPrecise(total, mode);
+        break;
+      case 'balanced':
+        await engine.runBalanced(total, mode);
+        break;
+      case 'fast':
+        await engine.runFast(total, mode);
+        break;
+      case 'ultra':
+        await engine.runUltra(total, mode);
+        break;
+    }
+  } catch (error) {
+    utils.log(`実行エラー: ${error.message}`, 'error');
+  }
+
+  // 完了処理
+  const elapsed = ((Date.now() - state.startTime) / 1000).toFixed(2);
+  const finalLength = history.length;
+  const actualAdded = finalLength - state.startLength;
+  
+  utils.log(`完了: 要求 ${total}件, 実際 ${actualAdded}件, 経過 ${elapsed}秒`, 'success');
+  utils.log(`履歴長: ${state.startLength} → ${finalLength} (差分: ${actualAdded})`, 'info');
+  
+  state.running = false;
+  els.status.textContent = '完了';
+  els.run.disabled = false;
+  utils.updateStats();
+}
+
+// 停止関数
+function stop() {
+  if (!state.running) {
+    utils.log('実行中ではありません', 'warning');
+    return;
+  }
+  
+  state.stopRequested = true;
+  els.status.textContent = '停止中...';
+  utils.log('停止要求を送信しました', 'warning');
+}
+
+// クリーンアップ関数
+function cleanup() {
+  const markerStr = sessionStorage.getItem(STORAGE_KEY);
+  if (!markerStr) {
+    utils.log('クリーンアップ情報がありません', 'warning');
+    return;
+  }
+
+  const marker = JSON.parse(markerStr);
+  const current = history.length;
+  const delta = current - marker.start;
+  
+  if (delta <= 0) {
+    utils.log('削除する履歴がありません', 'info');
+    return;
+  }
+
+  utils.log(`クリーンアップ開始: ${delta}件の履歴を削除します`, 'info');
+  
+  try {
+    // 履歴を戻る
+    history.go(-delta);
+    
+    sessionStorage.removeItem(STORAGE_KEY);
+    utils.log(`クリーンアップ完了: ${delta}件削除`, 'success');
+    
+    // 統計リセット
+    setTimeout(() => {
+      state.addedCount = 0;
+      state.successCount = 0;
+      state.startLength = history.length;
+      utils.updateStats();
+    }, 100);
+  } catch (error) {
+    utils.log(`クリーンアップエラー: ${error.message}`, 'error');
+  }
+}
+
+// ログクリア
+function clearLog() {
+  els.log.innerHTML = '';
+  state.logs = [];
+  utils.log('ログをクリアしました', 'info');
+}
+
+// ログエクスポート
+function exportLog() {
+  if (state.logs.length === 0) {
+    utils.log('エクスポートするログがありません', 'warning');
+    return;
+  }
+
+  const logText = state.logs.map(entry => 
+    `[${entry.time}] [${entry.type.toUpperCase()}] ${entry.msg}`
+  ).join('\n');
+
+  const blob = new Blob([logText], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `history-gen-log-${Date.now()}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  utils.log('ログをエクスポートしました', 'success');
+}
+
+// イベントリスナー
+els.run.addEventListener('click', run);
+els.stop.addEventListener('click', stop);
+els.cleanup.addEventListener('click', cleanup);
+els.clearLog.addEventListener('click', clearLog);
+els.exportLog.addEventListener('click', exportLog);
+
+// 戦略変更時の推奨設定
+els.strategy.addEventListener('change', (e) => {
+  const strategy = e.target.value;
+  
+  switch(strategy) {
+    case 'precise':
+      els.chunkSize.value = 10;
+      els.delay.value = 10;
+      utils.log('高精度モード: 確実性重視の設定に変更', 'info');
+      break;
+    case 'balanced':
+      els.chunkSize.value = 100;
+      els.delay.value = 5;
+      utils.log('バランスモード: 標準設定に変更', 'info');
+      break;
+    case 'fast':
+      els.chunkSize.value = 500;
+      els.delay.value = 1;
+      utils.log('高速モード: パフォーマンス重視の設定に変更', 'info');
+      break;
+    case 'ultra':
+      els.chunkSize.value = 1000;
+      els.delay.value = 0;
+      utils.log('ウルトラモード: 最速設定に変更（リスク有）', 'warning');
+      break;
+  }
+});
+
+// 初期化
+function init() {
+  utils.log('History Generator Pro v3 起動完了', 'success');
+  utils.log('システム準備完了', 'info');
+  
+  // 初期統計表示
+  els.startLen.textContent = utils.formatNumber(history.length);
+  els.curLen.textContent = utils.formatNumber(history.length);
+  
+  // 既存マーカーチェック
+  const markerStr = sessionStorage.getItem(STORAGE_KEY);
+  if (markerStr) {
+    const marker = JSON.parse(markerStr);
+    utils.log(`前回の実行データ検出: 開始位置 ${marker.start}`, 'info');
+  }
+}
+
+// ページロード時に初期化
+init();
+</script>
+</body>
+</html>
